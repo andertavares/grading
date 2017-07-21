@@ -1,0 +1,73 @@
+import os
+import argparse
+from unidecode import unidecode
+
+def run(database, file_list, invert):
+
+    # regular: name to number
+    # inverted: number to name
+    conversion = {}
+    print(database)
+    for line in open(database).readlines():
+        data = line.strip().split('\t')
+
+        # indexes name or number depending on inversion or not
+        key_index, value_index = (0, 1)
+        if invert:
+            key_index, value_index = 1, 0
+
+        # creates dict as name to number
+        if isinstance(data[key_index], int):
+            conversion[data[value_index]] = data[key_index]
+        else:
+            conversion[data[key_index]] = data[value_index]
+
+    # now, do the conversion
+    #file_list = set([x.tolower() for x in file_list])
+    for key, value in conversion.items():
+        found = False
+        for f in file_list:
+            # uses unidecode to strip accents and ç
+            if unidecode(key.lower()) in f.lower():
+                # found, convert
+                old_name, extension = os.path.splitext(f)
+
+                # sets the new name (preserves extension)
+                new_name = value + extension
+
+                # sets the new path (same dir as old_name)
+                new_path = os.path.join(os.path.dirname(old_name), new_name)
+                os.rename(f, new_path)
+                print('%s -> %s' % (f, new_path))
+                found = True
+                break
+                #TODO didn't work with norberto
+        if not found:
+            print('Warning! Key %s not found in files!' % key)
+
+
+
+    #print(conversion)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Anonymizer. Transforms file names.')
+
+    parser.add_argument(
+        'database', type=str,
+        help='File with name-to-number correspondence'
+    )
+
+    parser.add_argument(
+        'input', nargs='+',
+        help='File(s) to be analyzed',
+    )
+
+    parser.add_argument(
+        '-i', '--invert', action='store_true',
+        help='Invert (de-anonymize) students'
+    )
+
+    args = parser.parse_args()
+    #print(args, args.database)
+    run(args.database, args.input, args.invert)
+    # print('Done')
