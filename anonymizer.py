@@ -23,7 +23,6 @@ def run(database, file_list, invert):
             conversion[data[key_index]] = data[value_index]
 
     # now, do the conversion
-    #file_list = set([x.tolower() for x in file_list])
     for key, value in conversion.items():
         found = False
         for f in file_list:
@@ -38,10 +37,9 @@ def run(database, file_list, invert):
                 # sets the new path (same dir as old_name)
                 new_path = os.path.join(os.path.dirname(old_name), new_name)
                 os.rename(f, new_path)
-                print('%s -> %s' % (f, new_path))
+                # print('%s -> %s' % (f, new_path))
                 found = True
                 break
-                #TODO didn't work with norberto
         if not found:
             print('Warning! Key %s not found in files!' % key)
 
