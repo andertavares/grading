@@ -45,8 +45,52 @@ def run(database, file_list, invert):
             print('Warning! Key %s not found in files!' % key)
 
 
+def run_multiple_tests(database, file_list, invert):
+    # regular: name to number
+    # inverted: number to name
+    conversion = {}
+    print(database)
+    exam_types = {}
+    for line in open(database).readlines():
+        # ignores comments
+        if line[0] == '#':
+            continue
 
-    #print(conversion)
+        data = line.strip().split('\t')
+        # indexes name or number depending on inversion or not
+        key_index, value_index = (1, 2)
+        if invert:
+            key_index, value_index = 2, 1
+
+        # creates dict as name to number
+        # also fills the exam type
+        if isinstance(data[key_index], int):
+            conversion[data[value_index]] = data[key_index]
+            exam_types[data[value_index]] = data[0]
+        else:
+            conversion[data[key_index]] = data[value_index]
+            exam_types[data[key_index]] = data[0]
+
+    # now, do the conversion
+    for key, value in conversion.items():
+        found = False
+        for f in file_list:
+            # uses unidecode to strip accents and ç
+            if unidecode(key.lower()) in unidecode(f.lower()):
+                # found, convert
+                old_name, extension = os.path.splitext(f)
+
+                # sets the new name (preserves extension)
+                new_name = '%s_%s%s' % (exam_types[key], value, extension)
+
+                # sets the new path (same dir as old_name)
+                new_path = os.path.join(os.path.dirname(old_name), new_name)
+                os.rename(f, new_path)
+                # print('%s -> %s' % (f, new_path))
+                found = True
+                break
+        if not found:
+            print('Warning! Key %s not found in files!' % key)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Anonymizer. Transforms file names.')
@@ -66,7 +110,15 @@ if __name__ == '__main__':
         help='Invert (de-anonymize) students'
     )
 
+    parser.add_argument(
+        '-m', '--multiple', action='store_true',
+        help='Are there multiple types of tests? (they are indicated in the first file column)',
+    )
+
     args = parser.parse_args()
-    #print(args, args.database)
-    run(args.database, args.input, args.invert)
+    if args.multiple:
+        run_multiple_tests(args.database, args.input, args.invert)
+
+    else:
+        run(args.database, args.input, args.invert)
     # print('Done')
