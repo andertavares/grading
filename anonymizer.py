@@ -2,6 +2,7 @@ import os
 import argparse
 from unidecode import unidecode
 
+
 def run(database, file_list, invert):
 
     # regular: name to number
