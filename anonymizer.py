@@ -1,3 +1,15 @@
+"""
+This script anonymize student submissions, it requires tab-separated file with
+student IDs and names. It looks up in a specific directory and renames the
+file containing the name, replacing it with the student's ID.
+
+After grading, you can invert and rename back from ID to name.
+
+It also support multiple tests, if you specify so, it prepends the test ID
+before the file name.
+"""
+
+
 import os
 import argparse
 from unidecode import unidecode
@@ -107,7 +119,7 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '-i', '--invert', action='store_true',
-        help='Invert (de-anonymize) students'
+        help='Invert operation (if file is number-to-name, the program converts name-to-number)'
     )
 
     parser.add_argument(
@@ -121,4 +133,3 @@ if __name__ == '__main__':
 
     else:
         run(args.database, args.input, args.invert)
-    # print('Done')

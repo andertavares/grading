@@ -1,3 +1,9 @@
+"""
+Looks into the grading section, summing up partial grades.
+When if finds a line with "Total:", it appends the total grade there.
+
+"""
+
 import re
 import argparse
 
@@ -54,4 +60,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     analyse(args.input, args.scale)
-    #print('Done')
+

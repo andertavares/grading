@@ -1,3 +1,7 @@
+"""
+Makes a summary, showing a list of students and their grades
+"""
+
 import argparse
 
 
