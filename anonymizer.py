@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 """
 This script anonymize student submissions, it requires tab-separated file with
 student IDs and names. It looks up in a specific directory and renames the
@@ -64,11 +66,15 @@ def run_multiple_tests(database, file_list, invert):
     print(database)
     exam_types = {}
     for line in open(database).readlines():
+
+        print(line)
+
         # ignores comments
         if line[0] == '#':
             continue
 
         data = line.strip().split('\t')
+
         # indexes name or number depending on inversion or not
         key_index, value_index = (1, 2)
         if invert:
@@ -82,6 +88,16 @@ def run_multiple_tests(database, file_list, invert):
         else:
             conversion[data[key_index]] = data[value_index]
             exam_types[data[key_index]] = data[0]
+
+    print(
+        "Found %d names in database" %
+        (len(conversion))
+    )
+
+    print(
+        "File list has %d files" %
+        (len(file_list))
+    )
 
     # now, do the conversion
     for key, value in conversion.items():
