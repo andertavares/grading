@@ -15,27 +15,32 @@ def analyse(file_list, scale=0):
         new_lines = []
 
         f = open(file_name)
-        for line in f.readlines():
-            match = re.search('(\d+\.*\d*) de (\d+\.*\d*)', line)
+        try:
+            for line in f.readlines():
+                match = re.search('(\d+\.*\d*) de (\d+\.*\d*)', line)
 
-            if match:
-                # attained grade is in group 1
-                final_grade += float(match.group(1))
+                if match:
+                    # attained grade is in group 1
+                    final_grade += float(match.group(1))
 
-                # max grade is in group 2
-                max_grade += float(match.group(2))
+                    # max grade is in group 2
+                    max_grade += float(match.group(2))
 
-            # replaces the line with 'Total' with 'Total' + the grades
-            if 'Total:' in line:
-                line = 'Total: %.2f de %.2f ' % (final_grade, max_grade)
+                # replaces the line with 'Total' with 'Total' + the grades
+                if 'Total:' in line:
+                    line = 'Total: %.2f de %.2f ' % (final_grade, max_grade)
 
-                if scale > 0:
-                    line += '(%.2f de %.2f)' % \
-                            (round(final_grade*scale, 2), round(max_grade*scale, 2))
+                    if scale > 0:
+                        line += '(%.2f de %.2f)' % \
+                                (round(final_grade*scale, 2), round(max_grade*scale, 2))
 
-                line += '\n'
-            # will write a file with new total
-            new_lines.append(line)
+                    line += '\n'
+                # will write a file with new total
+                new_lines.append(line)
+        except UnicodeDecodeError as e:
+            print('Error in file %s.' % file_name)
+            print(e)
+        
         f.close()
 
         # now, write updated file
